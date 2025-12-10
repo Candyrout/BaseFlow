@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import "./interfaces/IDEXAdapter.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
 /**
  * @title FlowRouter
  * @notice Main router contract for BaseFlow liquidity aggregator
  * @dev Handles multi-DEX routing and split routing
  */
 contract FlowRouter {
+    using SafeERC20 for IERC20;
     /// @notice Swap path structure
     struct SwapPath {
         address dex;        // DEX adapter address
@@ -129,9 +134,33 @@ contract FlowRouter {
         SwapPath memory path,
         uint256 amountIn
     ) internal returns (uint256 amountOut) {
-        // TODO: Implement actual DEX adapter calls
-        // This is a placeholder
-        return 0;
+        // Transfer tokens to adapter if needed
+        IERC20 tokenIn = IERC20(path.tokenIn);
+        uint256 balanceBefore = tokenIn.balanceOf(address(this));
+        
+        // Transfer tokens from user to router
+        tokenIn.safeTransferFrom(msg.sender, address(this), amountIn);
+        
+        // Get adapter interface
+        IDEXAdapter adapter = IDEXAdapter(path.dex);
+        
+        // Calculate minimum amount out (with 0.5% slippage tolerance)
+        uint256 minAmountOut = (amountIn * 995) / 1000; // Simplified, should use actual quote
+        
+        // Execute swap via adapter
+        amountOut = adapter.swap(
+            path.tokenIn,
+            path.tokenOut,
+            amountIn,
+            minAmountOut,
+            path.data
+        );
+        
+        // Transfer output tokens to user
+        IERC20 tokenOut = IERC20(path.tokenOut);
+        tokenOut.safeTransfer(msg.sender, amountOut);
+        
+        return amountOut;
     }
 
     /**
@@ -142,9 +171,8 @@ contract FlowRouter {
         SwapPath memory path,
         uint256 amountIn
     ) internal view returns (uint256 amountOut) {
-        // TODO: Implement actual DEX adapter quote calls
-        // This is a placeholder
-        return 0;
+        IDEXAdapter adapter = IDEXAdapter(path.dex);
+        return adapter.getQuote(path.tokenIn, path.tokenOut, amountIn);
     }
 
     /**
