@@ -1,0 +1,31 @@
+{
+  "name": "@baseflow/backend",
+  "version": "0.1.0",
+  "description": "BaseFlow backend API and routing engine",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch api.js",
+    "start": "node api.js",
+    "test": "node --test tests/**/*.test.js",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "base",
+    "defi",
+    "dex",
+    "aggregator"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ethers": "^6.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.55.0"
+  }
+}
+

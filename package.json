@@ -1,0 +1,37 @@
+{
+  "name": "baseflow",
+  "version": "0.1.0",
+  "description": "Optimized liquidity routing for the Base ecosystem",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd contracts && forge install && cd ../backend && npm install && cd ../frontend && npm install && cd ../sdk/js && npm install",
+    "test:all": "npm run test:contracts && npm run test:backend && npm run test:frontend",
+    "test:contracts": "cd contracts && forge test",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "build:all": "npm run build:contracts && npm run build:backend && npm run build:frontend && npm run build:sdk",
+    "build:contracts": "cd contracts && forge build",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build:sdk": "cd sdk/js && npm run build",
+    "lint": "cd contracts && forge fmt --check && cd ../backend && npm run lint && cd ../frontend && npm run lint"
+  },
+  "keywords": [
+    "base",
+    "defi",
+    "dex",
+    "aggregator",
+    "liquidity",
+    "routing",
+    "mev",
+    "uniswap",
+    "aerodrome"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/baseflow.git"
+  }
+}
+

@@ -1,0 +1,50 @@
+name: Deploy Contracts
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Network to deploy to'
+        required: true
+        type: choice
+        options:
+          - base_sepolia
+          - base_mainnet
+      verify:
+        description: 'Verify contracts'
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+      
+      - name: Install dependencies
+        working-directory: contracts
+        run: forge install
+      
+      - name: Deploy contracts
+        working-directory: contracts
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          BASE_MAINNET_RPC_URL: ${{ secrets.BASE_MAINNET_RPC_URL }}
+          BASESCAN_API_KEY: ${{ secrets.BASESCAN_API_KEY }}
+        run: |
+          if [ "${{ inputs.verify }}" == "true" ]; then
+            forge script script/Deploy.s.sol:DeployScript \
+              --rpc-url ${{ inputs.network }} \
+              --broadcast \
+              --verify
+          else
+            forge script script/Deploy.s.sol:DeployScript \
+              --rpc-url ${{ inputs.network }} \
+              --broadcast
+          fi
+
