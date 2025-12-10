@@ -17,9 +17,12 @@ import { getBaseSwapQuote } from './dex-fetchers/baseswap.js';
 export async function getQuote(tokenIn, tokenOut, amount) {
   const quotes = [];
 
+  // Get RPC URL from environment
+  const rpcUrl = process.env.BASE_MAINNET_RPC || process.env.BASE_SEPOLIA_RPC || 'https://mainnet.base.org';
+
   // Fetch quotes from all DEXs in parallel
   const quotePromises = [
-    getUniswapV3Quote(tokenIn, tokenOut, amount).catch(err => {
+    getUniswapV3Quote(tokenIn, tokenOut, amount, rpcUrl).catch(err => {
       console.error('Uniswap V3 quote error:', err);
       return null;
     }),
