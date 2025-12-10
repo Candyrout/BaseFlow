@@ -52,7 +52,9 @@ contract UniV3Adapter is IDEXAdapter {
         uint24 fee = data.length >= 32 ? abi.decode(data, (uint24)) : FEE_MEDIUM;
 
         // Approve router to spend tokens
-        IERC20(tokenIn).safeApprove(SWAP_ROUTER_02, amountIn);
+        IERC20 tokenInContract = IERC20(tokenIn);
+        // Use SafeERC20 forceApprove
+        SafeERC20.forceApprove(tokenInContract, SWAP_ROUTER_02, amountIn);
 
         // Prepare swap parameters
         ExactInputSingleParams memory params = ExactInputSingleParams({
@@ -135,7 +137,8 @@ contract UniV3Adapter is IDEXAdapter {
         require(success, "UniV3Adapter: quote failed");
         
         // QuoterV2 returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)
-        (amountOut,,,,) = abi.decode(returnData, (uint256, uint160, uint32, uint256));
+        (uint256 out, , , ) = abi.decode(returnData, (uint256, uint160, uint32, uint256));
+        amountOut = out;
         
         return amountOut;
     }
