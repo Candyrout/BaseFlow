@@ -17,6 +17,7 @@ contract DeployScript is Script {
         // Deploy FlowRouter
         FlowRouter router = new FlowRouter(address(0), 0); // No fee for MVP
         console.log("FlowRouter deployed at:", address(router));
+        console.log("FlowRouter owner:", router.owner());
 
         vm.stopBroadcast();
     }
