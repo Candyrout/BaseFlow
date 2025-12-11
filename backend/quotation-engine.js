@@ -26,11 +26,11 @@ export async function getQuote(tokenIn, tokenOut, amount) {
       console.error('Uniswap V3 quote error:', err);
       return null;
     }),
-    getAerodromeQuote(tokenIn, tokenOut, amount).catch(err => {
+    getAerodromeQuote(tokenIn, tokenOut, amount, rpcUrl).catch(err => {
       console.error('Aerodrome quote error:', err);
       return null;
     }),
-    getBaseSwapQuote(tokenIn, tokenOut, amount).catch(err => {
+    getBaseSwapQuote(tokenIn, tokenOut, amount, rpcUrl).catch(err => {
       console.error('BaseSwap quote error:', err);
       return null;
     })
