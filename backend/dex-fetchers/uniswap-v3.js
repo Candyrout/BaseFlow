@@ -59,14 +59,15 @@ export async function getUniswapV3Quote(tokenIn, tokenOut, amount, rpcUrl = proc
           };
         }
       } catch (error) {
-        // Pool might not exist for this fee tier, continue
-        console.debug(`No pool found for fee tier ${fee}:`, error.message);
+        // Pool might not exist for this fee tier, continue silently
+        // This is expected behavior - not all fee tiers have pools for every pair
         continue;
       }
     }
 
     if (!bestQuote) {
-      throw new Error('No Uniswap V3 pool found for this token pair');
+      // No pool found - this is expected for some token pairs
+      return null;
     }
 
     // Calculate price impact (simplified)
@@ -86,8 +87,11 @@ export async function getUniswapV3Quote(tokenIn, tokenOut, amount, rpcUrl = proc
       fee: bestFee
     };
   } catch (error) {
-    console.error('Uniswap V3 quote error:', error);
-    throw error;
+    // Log only unexpected errors (not pool not found)
+    if (!error.message.includes('pool found')) {
+      console.error('Uniswap V3 unexpected error:', error.message);
+    }
+    return null;
   }
 }
 

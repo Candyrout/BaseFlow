@@ -21,19 +21,11 @@ export async function getQuote(tokenIn, tokenOut, amount) {
   const rpcUrl = process.env.BASE_MAINNET_RPC || process.env.BASE_SEPOLIA_RPC || 'https://mainnet.base.org';
 
   // Fetch quotes from all DEXs in parallel
+  // Errors are handled silently - missing pools are expected for some token pairs
   const quotePromises = [
-    getUniswapV3Quote(tokenIn, tokenOut, amount, rpcUrl).catch(err => {
-      console.error('Uniswap V3 quote error:', err);
-      return null;
-    }),
-    getAerodromeQuote(tokenIn, tokenOut, amount, rpcUrl).catch(err => {
-      console.error('Aerodrome quote error:', err);
-      return null;
-    }),
-    getBaseSwapQuote(tokenIn, tokenOut, amount, rpcUrl).catch(err => {
-      console.error('BaseSwap quote error:', err);
-      return null;
-    })
+    getUniswapV3Quote(tokenIn, tokenOut, amount, rpcUrl).catch(() => null),
+    getAerodromeQuote(tokenIn, tokenOut, amount, rpcUrl).catch(() => null),
+    getBaseSwapQuote(tokenIn, tokenOut, amount, rpcUrl).catch(() => null)
   ];
 
   const results = await Promise.all(quotePromises);
@@ -46,7 +38,11 @@ export async function getQuote(tokenIn, tokenOut, amount) {
   }
 
   if (quotes.length === 0) {
-    throw new Error('No quotes available');
+    throw new Error(
+      `No liquidity pools found for ${tokenIn} → ${tokenOut}. ` +
+      `This token pair may not have liquidity on any supported DEX. ` +
+      `Try a different token pair or check if the addresses are correct.`
+    );
   }
 
   // Find best quote (highest output amount)

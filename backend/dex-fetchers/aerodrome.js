@@ -50,7 +50,8 @@ export async function getAerodromeQuote(tokenIn, tokenOut, amount, rpcUrl = proc
         };
       }
     } catch (error) {
-      console.debug('No volatile pool found:', error.message);
+      // Pool might not exist, continue silently
+      // This is expected behavior
     }
 
     // Try stable pool
@@ -73,11 +74,13 @@ export async function getAerodromeQuote(tokenIn, tokenOut, amount, rpcUrl = proc
         };
       }
     } catch (error) {
-      console.debug('No stable pool found:', error.message);
+      // Pool might not exist, continue silently
+      // This is expected behavior
     }
 
     if (!bestQuote) {
-      throw new Error('No Aerodrome pool found for this token pair');
+      // No pool found - this is expected for some token pairs
+      return null;
     }
 
     // Calculate price impact (simplified)
@@ -97,8 +100,11 @@ export async function getAerodromeQuote(tokenIn, tokenOut, amount, rpcUrl = proc
       stable: useStable
     };
   } catch (error) {
-    console.error('Aerodrome quote error:', error);
-    throw error;
+    // Log only unexpected errors (not pool not found)
+    if (!error.message.includes('pool found')) {
+      console.error('Aerodrome unexpected error:', error.message);
+    }
+    return null;
   }
 }
 

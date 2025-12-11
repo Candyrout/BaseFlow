@@ -28,8 +28,18 @@ app.get('/quote', async (req, res) => {
     const quote = await getQuote(tokenIn, tokenOut, amount);
     res.json(quote);
   } catch (error) {
-    console.error('Quote error:', error);
-    res.status(500).json({ error: error.message });
+    // Provide user-friendly error messages
+    const errorMessage = error.message || 'Failed to get quote';
+    console.error('Quote API error:', errorMessage);
+    
+    // Check if it's a "no quotes" error (404) vs server error (500)
+    const statusCode = errorMessage.includes('No liquidity pools') ? 404 : 500;
+    res.status(statusCode).json({ 
+      error: errorMessage,
+      tokenIn,
+      tokenOut,
+      amount
+    });
   }
 });
 
