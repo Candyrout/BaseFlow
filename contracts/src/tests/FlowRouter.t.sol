@@ -49,6 +49,7 @@ contract FlowRouterTest is Test {
     }
 
     function test_Initialization() public {
+        assertEq(router.owner(), address(this)); // Deployer is owner
         assertEq(router.feeRecipient(), feeRecipient);
         assertEq(router.feeBps(), 0);
     }
@@ -119,11 +120,69 @@ contract FlowRouterTest is Test {
         assertEq(router.feeBps(), newFee);
     }
 
+    function test_SetFee_InvalidFee() public {
+        vm.expectRevert("FlowRouter: invalid fee");
+        router.setFee(10001); // > 10000 (100%)
+    }
+
+    function test_SetFee_NotOwner() public {
+        vm.prank(user); // user is not owner
+        vm.expectRevert("FlowRouter: not owner");
+        router.setFee(10);
+    }
+
     function test_SetFeeRecipient() public {
         address newRecipient = address(0x3);
         
         router.setFeeRecipient(newRecipient);
         assertEq(router.feeRecipient(), newRecipient);
+    }
+
+    function test_SetFeeRecipient_ZeroAddress() public {
+        vm.expectRevert("FlowRouter: zero address");
+        router.setFeeRecipient(address(0));
+    }
+
+    function test_SetFeeRecipient_NotOwner() public {
+        vm.prank(user); // user is not owner
+        vm.expectRevert("FlowRouter: not owner");
+        router.setFeeRecipient(address(0x3));
+    }
+
+    function test_TransferOwnership() public {
+        address newOwner = address(0x4);
+        
+        router.transferOwnership(newOwner);
+        assertEq(router.owner(), newOwner);
+    }
+
+    function test_TransferOwnership_ZeroAddress() public {
+        vm.expectRevert("FlowRouter: zero address");
+        router.transferOwnership(address(0));
+    }
+
+    function test_TransferOwnership_NotOwner() public {
+        vm.prank(user); // user is not owner
+        vm.expectRevert("FlowRouter: not owner");
+        router.transferOwnership(address(0x4));
+    }
+
+    function test_NewOwner_CanSetFee() public {
+        address newOwner = address(0x4);
+        router.transferOwnership(newOwner);
+        
+        vm.prank(newOwner);
+        router.setFee(5);
+        assertEq(router.feeBps(), 5);
+    }
+
+    function test_OldOwner_CannotSetFee() public {
+        address newOwner = address(0x4);
+        router.transferOwnership(newOwner);
+        
+        // Old owner (this contract) can no longer set fee
+        vm.expectRevert("FlowRouter: not owner");
+        router.setFee(5);
     }
 
     function test_UniV3Adapter_Name() public view {

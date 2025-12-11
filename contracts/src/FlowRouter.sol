@@ -26,6 +26,9 @@ contract FlowRouter {
     /// @notice Fee basis points (e.g., 5 = 0.05%)
     uint256 public feeBps;
 
+    /// @notice Owner (for access control)
+    address public owner;
+
     /// @notice Events
     event SwapExecuted(
         address indexed user,
@@ -37,6 +40,15 @@ contract FlowRouter {
 
     event FeeUpdated(uint256 oldFeeBps, uint256 newFeeBps);
     event FeeRecipientUpdated(address oldRecipient, address newRecipient);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    /**
+     * @notice Modifier to restrict access to owner only
+     */
+    modifier onlyOwner() {
+        require(msg.sender == owner, "FlowRouter: not owner");
+        _;
+    }
 
     /**
      * @notice Constructor
@@ -44,8 +56,10 @@ contract FlowRouter {
      * @param _feeBps Fee in basis points (0 for MVP)
      */
     constructor(address _feeRecipient, uint256 _feeBps) {
+        owner = msg.sender;
         feeRecipient = _feeRecipient;
         feeBps = _feeBps;
+        emit OwnershipTransferred(address(0), msg.sender);
     }
 
     /**
@@ -176,23 +190,36 @@ contract FlowRouter {
     }
 
     /**
-     * @notice Update fee (only owner in future versions)
+     * @notice Update fee (only owner)
+     * @param _feeBps Fee in basis points (must be <= 10000)
      */
-    function setFee(uint256 _feeBps) external {
-        // TODO: Add access control
+    function setFee(uint256 _feeBps) external onlyOwner {
+        require(_feeBps <= 10000, "FlowRouter: invalid fee");
         uint256 oldFee = feeBps;
         feeBps = _feeBps;
         emit FeeUpdated(oldFee, _feeBps);
     }
 
     /**
-     * @notice Update fee recipient (only owner in future versions)
+     * @notice Update fee recipient (only owner)
+     * @param _feeRecipient Address to receive fees
      */
-    function setFeeRecipient(address _feeRecipient) external {
-        // TODO: Add access control
+    function setFeeRecipient(address _feeRecipient) external onlyOwner {
+        require(_feeRecipient != address(0), "FlowRouter: zero address");
         address oldRecipient = feeRecipient;
         feeRecipient = _feeRecipient;
         emit FeeRecipientUpdated(oldRecipient, _feeRecipient);
+    }
+
+    /**
+     * @notice Transfer ownership to a new owner
+     * @param newOwner Address of the new owner
+     */
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "FlowRouter: zero address");
+        address oldOwner = owner;
+        owner = newOwner;
+        emit OwnershipTransferred(oldOwner, newOwner);
     }
 }
 
