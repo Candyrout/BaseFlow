@@ -3,6 +3,7 @@
 ![Built for Base](https://img.shields.io/badge/Built%20for-Base-0052FF?style=for-the-badge&logo=base&logoColor=white)
 ![Deployed on Base](https://img.shields.io/badge/Deployed%20on-Base%20Mainnet-0052FF?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Live-success?style=for-the-badge)
 
 **Optimized liquidity routing for the Base ecosystem.**
 
@@ -22,8 +23,14 @@ BaseFlow is not a generic 1inch copycat, but a specialized aggregator that:
 
 ## 🔗 Links
 
-- **Base Mainnet Contract:** [Coming Soon](#)
-- **Base Sepolia Contract:** [Coming Soon](#)
+### Smart Contracts
+
+- **Base Mainnet FlowRouter:** [0x3dDB67151b925734B068517Cd655A25324b95902](https://basescan.org/address/0x3dDB67151b925734B068517Cd655A25324b95902)
+- **Base Sepolia FlowRouter:** [0xD9a60b0Bc8d8C7F9Bd1aab40B0486756eAF997C3](https://sepolia.basescan.org/address/0xD9a60b0Bc8d8C7F9Bd1aab40B0486756eAF997C3)
+- **All Contract Addresses:** [DEPLOYED_ADDRESSES.md](./DEPLOYED_ADDRESSES.md)
+
+### Other Links
+
 - **Frontend:** [Coming Soon](#)
 - **API:** [Coming Soon](#)
 - **Documentation:** [docs/](./docs/)
@@ -192,34 +199,33 @@ curl -X POST "https://api.baseflow.xyz/simulate" \
 
 ## 🗺️ Roadmap
 
-### Phase 1: MVP (2 weeks)
+### Phase 1: MVP ✅ COMPLETED
 - [x] Project structure setup
-- [ ] FlowRouter.sol implementation
-- [ ] UniV3Adapter.sol
-- [ ] AerodromeAdapter.sol
-- [ ] Basic routing engine
-- [ ] API: /quote, /swap
-- [ ] Basic Swap UI
-- [ ] Deploy to Base Sepolia
-- [ ] README + architecture diagram
-- [ ] 10–15 GitHub Issues
-- [ ] GitHub Actions
+- [x] FlowRouter.sol implementation
+- [x] UniV3Adapter.sol
+- [x] AerodromeAdapter.sol
+- [x] Basic routing engine
+- [x] API: /quote, /swap
+- [x] Basic Swap UI
+- [x] Deploy to Base Sepolia ✅
+- [x] README + architecture diagram
+- [x] GitHub Actions
+- [x] Deploy to Base Mainnet ✅
 
-### Phase 2: Full Aggregator
-- [ ] All DEX adapters
+### Phase 2: Full Aggregator (In Progress)
+- [ ] BaseSwap adapter implementation
 - [ ] Advanced routing algorithms
 - [ ] Visualization UI
 - [ ] Best path simulator
-- [ ] MEVGuard v1
-- [ ] JS SDK
-- [ ] Complete documentation
-- [ ] Deploy to Base Mainnet
+- [x] MEVGuard v1 ✅
+- [ ] JS SDK improvements
+- [x] Complete documentation ✅
+- [ ] Frontend swap execution
 
 ### Phase 3: Final Polish
 - [ ] PR into Base ecosystem
 - [ ] Integration with small DEXs
 - [ ] Twitter presence
-- [ ] Whitepaper
 - [ ] YouTube demo
 - [ ] Add "safe mode" for swaps
 
