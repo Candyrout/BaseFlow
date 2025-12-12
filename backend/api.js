@@ -16,9 +16,10 @@ app.use(express.json());
  * Query params: tokenIn, tokenOut, amount
  */
 app.get('/quote', async (req, res) => {
-  try {
-    const { tokenIn, tokenOut, amount } = req.query;
+  // Extract query parameters outside try block so they're available in catch
+  const { tokenIn, tokenOut, amount } = req.query;
 
+  try {
     if (!tokenIn || !tokenOut || !amount) {
       return res.status(400).json({
         error: 'Missing required parameters: tokenIn, tokenOut, amount'
@@ -36,9 +37,9 @@ app.get('/quote', async (req, res) => {
     const statusCode = errorMessage.includes('No liquidity pools') ? 404 : 500;
     res.status(statusCode).json({ 
       error: errorMessage,
-      tokenIn,
-      tokenOut,
-      amount
+      tokenIn: tokenIn || null,
+      tokenOut: tokenOut || null,
+      amount: amount || null
     });
   }
 });

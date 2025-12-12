@@ -24,6 +24,16 @@ const ROUTER_ABI = [
  */
 export async function getBaseSwapQuote(tokenIn, tokenOut, amount, rpcUrl = process.env.BASE_MAINNET_RPC || 'https://mainnet.base.org') {
   try {
+    // Validate inputs
+    if (!tokenIn || !tokenOut || !amount) {
+      return null;
+    }
+
+    // Check for identical addresses (common error)
+    if (tokenIn.toLowerCase() === tokenOut.toLowerCase()) {
+      return null;
+    }
+
     const provider = new ethers.JsonRpcProvider(rpcUrl);
     const router = new ethers.Contract(BASESWAP_ROUTER, ROUTER_ABI, provider);
 
@@ -49,12 +59,14 @@ export async function getBaseSwapQuote(tokenIn, tokenOut, amount, rpcUrl = proce
         gasEstimate: '120000', // Estimated gas for BaseSwap swap
       };
     } catch (error) {
-      console.debug('BaseSwap quote error:', error.message);
-      throw new Error('No BaseSwap pool found for this token pair');
+      // Pool might not exist for this pair - this is expected
+      // Silently return null instead of throwing
+      return null;
     }
   } catch (error) {
-    console.error('BaseSwap quote error:', error);
-    throw error;
+    // Unexpected errors - return null instead of throwing
+    // This prevents crashes when BaseSwap is unavailable
+    return null;
   }
 }
 
