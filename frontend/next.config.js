@@ -6,6 +6,16 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
     NEXT_PUBLIC_ROUTER_ADDRESS: process.env.NEXT_PUBLIC_ROUTER_ADDRESS || '',
   },
+  webpack: (config, { isServer }) => {
+    // Fix for MetaMask SDK async-storage warning
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        '@react-native-async-storage/async-storage': false,
+      };
+    }
+    return config;
+  },
 }
 
 module.exports = nextConfig
