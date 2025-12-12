@@ -77,3 +77,7 @@ temp/
 .cache/
 *.pem
 
+# Documentation (keep only root README.md)
+*.md
+!README.md
+
